@@ -22,7 +22,7 @@ if "tree_generated" not in st.session_state:
 
 # Recursive Tree Drawing Function
 def draw_tree(ax, depth, x, y, step_x, step_y, is_max, node_id, parent_pos, alpha, beta):
-    global pruned_nodes
+    global pruned_nodes, explored_nodes
 
     # Draw node
     if depth == 0:
@@ -32,10 +32,13 @@ def draw_tree(ax, depth, x, y, step_x, step_y, is_max, node_id, parent_pos, alph
             st.session_state.terminal_values[node_id] = random.randint(-10, 10)
 
         ax.text(x, y, f"{st.session_state.terminal_values[node_id]}", fontsize=10, ha='center', va='center', bbox=dict(boxstyle="circle", facecolor="white"))
+        explored_nodes.append(node_id)  # Mark as explored
         return st.session_state.terminal_values[node_id], alpha, beta
 
     player = "Max" if is_max else "Min"
-    ax.text(x, y, player, fontsize=10, ha='center', va='center', bbox=dict(boxstyle="circle", facecolor="white"))
+    node_color = "lightgreen" if node_id not in pruned_nodes else "lightcoral"  # Green for explored, Red for pruned
+
+    ax.text(x, y, player, fontsize=10, ha='center', va='center', bbox=dict(boxstyle="circle", facecolor=node_color))
 
     # Create children positions
     left_x = x - step_x / 2
@@ -52,7 +55,9 @@ def draw_tree(ax, depth, x, y, step_x, step_y, is_max, node_id, parent_pos, alph
     else:
         node_value, alpha, beta = alpha_beta_pruning(left_value, right_value, is_max, alpha, beta, node_id)
 
-    ax.text(x, y - 10, f"{node_value}", fontsize=8, ha='center', color="red")
+    # Highlight current node value
+    node_text_color = "blue" if node_id == "Root" else "red"
+    ax.text(x, y - 10, f"{node_value}", fontsize=8, ha='center', color=node_text_color)
 
     # Connect parent to children
     if parent_pos:
@@ -63,8 +68,9 @@ def draw_tree(ax, depth, x, y, step_x, step_y, is_max, node_id, parent_pos, alph
 
 # Alpha-Beta Pruning Function
 def alpha_beta_pruning(left_value, right_value, is_max, alpha, beta, node_id):
+    global pruned_nodes
+
     if is_max:
-        # Max node
         if left_value > beta:
             # Prune right child
             pruned_nodes.append(f"Pruned Right: {node_id}")
@@ -76,7 +82,6 @@ def alpha_beta_pruning(left_value, right_value, is_max, alpha, beta, node_id):
             return left_value, alpha, beta
         return max(left_value, right_value), alpha, beta
     else:
-        # Min node
         if right_value < alpha:
             # Prune left child
             pruned_nodes.append(f"Pruned Left: {node_id}")
@@ -93,6 +98,7 @@ def alpha_beta_pruning(left_value, right_value, is_max, alpha, beta, node_id):
 if st.sidebar.button("Generate Tree"):
     st.session_state.tree_generated = True  # Set flag to indicate tree generation has been initiated
     pruned_nodes = []  # List to keep track of pruned nodes
+    explored_nodes = []  # List to keep track of explored nodes
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
@@ -113,6 +119,7 @@ if st.sidebar.button("Generate Tree"):
     # Display Best Value
     st.sidebar.write(f"Best Value (Algorithm: {algorithm}): {best_value}")
     st.sidebar.write(f"Pruned Nodes: {', '.join(pruned_nodes)}")
+    st.sidebar.write(f"Explored Nodes: {', '.join(explored_nodes)}")
 
 else:
     st.session_state.tree_generated = False  # Reset flag when the button is not pressed
