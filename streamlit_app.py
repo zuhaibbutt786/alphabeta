@@ -32,7 +32,7 @@ def draw_tree(ax, depth, x, y, step_x, step_y, is_max, node_id, parent_pos, alph
             st.session_state.terminal_values[node_id] = random.randint(-10, 10)
 
         ax.text(x, y, f"{st.session_state.terminal_values[node_id]}", fontsize=10, ha='center', va='center', bbox=dict(boxstyle="circle", facecolor="white"))
-        return st.session_state.terminal_values[node_id]
+        return st.session_state.terminal_values[node_id], alpha, beta
 
     player = "Max" if is_max else "Min"
     ax.text(x, y, player, fontsize=10, ha='center', va='center', bbox=dict(boxstyle="circle", facecolor="white"))
@@ -43,8 +43,8 @@ def draw_tree(ax, depth, x, y, step_x, step_y, is_max, node_id, parent_pos, alph
     child_y = y - step_y
 
     # Draw child nodes recursively
-    left_value = draw_tree(ax, depth - 1, left_x, child_y, step_x / 2, step_y, not is_max, f"{node_id}L", (x, y), alpha, beta)
-    right_value = draw_tree(ax, depth - 1, right_x, child_y, step_x / 2, step_y, not is_max, f"{node_id}R", (x, y), alpha, beta)
+    left_value, alpha, beta = draw_tree(ax, depth - 1, left_x, child_y, step_x / 2, step_y, not is_max, f"{node_id}L", (x, y), alpha, beta)
+    right_value, alpha, beta = draw_tree(ax, depth - 1, right_x, child_y, step_x / 2, step_y, not is_max, f"{node_id}R", (x, y), alpha, beta)
 
     # Minimax/Alpha-Beta logic
     if algorithm == "Minimax":
