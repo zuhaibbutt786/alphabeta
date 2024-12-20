@@ -2,7 +2,7 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import ConnectionPatch
-import time
+import random  # For generating random values
 
 # Streamlit App Configuration
 st.set_page_config(page_title="Decision Tree with Minimax", layout="wide")
@@ -24,13 +24,10 @@ if "tree_generated" not in st.session_state:
 def draw_tree(ax, depth, x, y, step_x, step_y, is_max, node_id, parent_pos):
     # Draw node
     if depth == 0:
-        # Terminal node: Check if value already exists in session state
+        # Terminal node: Assign random value
         if node_id not in st.session_state.terminal_values:
-            st.session_state.terminal_values[node_id] = st.sidebar.number_input(f"Node {node_id} Value:", key=f"node_{node_id}")
-
-        # Introduce 2-minute pause after input (120 seconds) if tree is generated
-        if st.session_state.tree_generated and node_id not in st.session_state.terminal_values:
-            time.sleep(120)  # Introduce delay after the first input
+            # Random values for terminal nodes between -10 and 10
+            st.session_state.terminal_values[node_id] = random.randint(-10, 10)
 
         ax.text(x, y, f"{st.session_state.terminal_values[node_id]}", fontsize=10, ha='center', va='center', bbox=dict(boxstyle="circle", facecolor="white"))
         return st.session_state.terminal_values[node_id]
