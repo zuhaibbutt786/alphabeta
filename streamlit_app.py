@@ -113,6 +113,13 @@ if st.sidebar.button("Generate Tree"):
     # Draw the tree
     best_value, alpha, beta = draw_tree(ax, depth, root_x, root_y, step_x, step_y, True, "Root", None, -float('inf'), float('inf'))
 
+    # Highlight pruned nodes with a cross
+    for pruned_node in pruned_nodes:
+        pruned_node_id = pruned_node.split(":")[1].strip()
+        node_pos = get_node_position(pruned_node_id)  # Get the position of the pruned node
+        if node_pos:
+            ax.text(node_pos[0], node_pos[1], "X", fontsize=12, ha='center', va='center', color="red")  # Mark with a red "X"
+
     # Display tree
     st.pyplot(fig)
 
@@ -123,3 +130,17 @@ if st.sidebar.button("Generate Tree"):
 
 else:
     st.session_state.tree_generated = False  # Reset flag when the button is not pressed
+
+# Helper function to get node position for pruned nodes (you may need to adjust this depending on your tree structure)
+def get_node_position(node_id):
+    # This function should return the x, y coordinates of the node with node_id
+    # For simplicity, just returning a random position for now (replace with actual logic)
+    node_positions = {
+        "RootL": (0.3, 0.7),
+        "RootR": (0.7, 0.7),
+        "RootLL": (0.2, 0.5),
+        "RootLR": (0.4, 0.5),
+        "RootRL": (0.6, 0.5),
+        "RootRR": (0.8, 0.5),
+    }
+    return node_positions.get(node_id)
