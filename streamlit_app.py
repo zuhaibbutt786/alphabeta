@@ -13,7 +13,7 @@ st.sidebar.header("Tree Configuration")
 depth = st.sidebar.number_input("Enter Tree Depth:", min_value=1, max_value=10, step=1)
 algorithm = st.sidebar.radio("Select Algorithm:", ("Minimax", "Alpha-Beta Pruning"))
 
-# Placeholder for terminal values and algorithm selection
+# Initialize session state variables
 if "terminal_values" not in st.session_state:
     st.session_state.terminal_values = {}
 
@@ -24,11 +24,11 @@ if "tree_generated" not in st.session_state:
 def draw_tree(ax, depth, x, y, step_x, step_y, is_max, node_id, parent_pos):
     # Draw node
     if depth == 0:
-        # Terminal node: Input box for value
+        # Terminal node: Check if value already exists in session state
         if node_id not in st.session_state.terminal_values:
             st.session_state.terminal_values[node_id] = st.sidebar.number_input(f"Node {node_id} Value:", key=f"node_{node_id}")
-        
-        # Introduce 2-minute pause after input (120 seconds)
+
+        # Introduce 2-minute pause after input (120 seconds) if tree is generated
         if st.session_state.tree_generated and node_id not in st.session_state.terminal_values:
             time.sleep(120)  # Introduce delay after the first input
 
