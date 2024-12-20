@@ -20,6 +20,20 @@ if "terminal_values" not in st.session_state:
 if "tree_generated" not in st.session_state:
     st.session_state.tree_generated = False
 
+# Helper function to get node position for pruned nodes
+def get_node_position(node_id):
+    # This function should return the x, y coordinates of the node with node_id
+    # For simplicity, just returning a sample position mapping
+    node_positions = {
+        "RootL": (0.3, 0.7),
+        "RootR": (0.7, 0.7),
+        "RootLL": (0.2, 0.5),
+        "RootLR": (0.4, 0.5),
+        "RootRL": (0.6, 0.5),
+        "RootRR": (0.8, 0.5),
+    }
+    return node_positions.get(node_id)
+
 # Recursive Tree Drawing Function
 def draw_tree(ax, depth, x, y, step_x, step_y, is_max, node_id, parent_pos, alpha, beta):
     global pruned_nodes, explored_nodes
@@ -130,17 +144,3 @@ if st.sidebar.button("Generate Tree"):
 
 else:
     st.session_state.tree_generated = False  # Reset flag when the button is not pressed
-
-# Helper function to get node position for pruned nodes (you may need to adjust this depending on your tree structure)
-def get_node_position(node_id):
-    # This function should return the x, y coordinates of the node with node_id
-    # For simplicity, just returning a random position for now (replace with actual logic)
-    node_positions = {
-        "RootL": (0.3, 0.7),
-        "RootR": (0.7, 0.7),
-        "RootLL": (0.2, 0.5),
-        "RootLR": (0.4, 0.5),
-        "RootRL": (0.6, 0.5),
-        "RootRR": (0.8, 0.5),
-    }
-    return node_positions.get(node_id)
