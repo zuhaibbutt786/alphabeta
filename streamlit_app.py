@@ -13,9 +13,12 @@ st.sidebar.header("Tree Configuration")
 depth = st.sidebar.number_input("Enter Tree Depth:", min_value=1, max_value=10, step=1)
 algorithm = st.sidebar.radio("Select Algorithm:", ("Minimax", "Alpha-Beta Pruning"))
 
-# Placeholder for terminal values
+# Placeholder for terminal values and algorithm selection
 if "terminal_values" not in st.session_state:
     st.session_state.terminal_values = {}
+
+if "tree_generated" not in st.session_state:
+    st.session_state.tree_generated = False
 
 # Recursive Tree Drawing Function
 def draw_tree(ax, depth, x, y, step_x, step_y, is_max, node_id, parent_pos):
@@ -26,7 +29,8 @@ def draw_tree(ax, depth, x, y, step_x, step_y, is_max, node_id, parent_pos):
             st.session_state.terminal_values[node_id] = st.sidebar.number_input(f"Node {node_id} Value:", key=f"node_{node_id}")
         
         # Introduce 2-minute pause after input (120 seconds)
-        time.sleep(120)
+        if st.session_state.tree_generated and node_id not in st.session_state.terminal_values:
+            time.sleep(120)  # Introduce delay after the first input
 
         ax.text(x, y, f"{st.session_state.terminal_values[node_id]}", fontsize=10, ha='center', va='center', bbox=dict(boxstyle="circle", facecolor="white"))
         return st.session_state.terminal_values[node_id]
@@ -66,6 +70,7 @@ def alpha_beta_pruning(left_value, right_value, is_max):
 
 # Generate Tree Button
 if st.sidebar.button("Generate Tree"):
+    st.session_state.tree_generated = True  # Set flag to indicate tree generation has been initiated
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
@@ -85,3 +90,6 @@ if st.sidebar.button("Generate Tree"):
 
     # Display Best Value
     st.sidebar.write(f"Best Value (Algorithm: {algorithm}): {best_value}")
+
+else:
+    st.session_state.tree_generated = False  # Reset flag when the button is not pressed
