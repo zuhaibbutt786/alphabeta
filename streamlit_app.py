@@ -13,18 +13,18 @@ depth = st.sidebar.number_input("Enter Tree Depth:", min_value=1, max_value=10, 
 algorithm = st.sidebar.radio("Select Algorithm:", ("Minimax", "Alpha-Beta Pruning"))
 
 # Placeholder for terminal values
-terminal_values = {}
+if "terminal_values" not in st.session_state:
+    st.session_state.terminal_values = {}
 
 # Recursive Tree Drawing Function
 def draw_tree(ax, depth, x, y, step_x, step_y, is_max, node_id, parent_pos):
-    global terminal_values
-
     # Draw node
     if depth == 0:
         # Terminal node: Input box for value
-        terminal_values[node_id] = st.sidebar.number_input(f"Node {node_id} Value:", key=f"node_{node_id}")
-        ax.text(x, y, f"{terminal_values[node_id]}", fontsize=10, ha='center', va='center', bbox=dict(boxstyle="circle", facecolor="white"))
-        return terminal_values[node_id]
+        if node_id not in st.session_state.terminal_values:
+            st.session_state.terminal_values[node_id] = st.sidebar.number_input(f"Node {node_id} Value:", key=f"node_{node_id}")
+        ax.text(x, y, f"{st.session_state.terminal_values[node_id]}", fontsize=10, ha='center', va='center', bbox=dict(boxstyle="circle", facecolor="white"))
+        return st.session_state.terminal_values[node_id]
 
     player = "Max" if is_max else "Min"
     ax.text(x, y, player, fontsize=10, ha='center', va='center', bbox=dict(boxstyle="circle", facecolor="white"))
