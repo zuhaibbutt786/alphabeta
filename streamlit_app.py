@@ -20,19 +20,24 @@ if "terminal_values" not in st.session_state:
 if "tree_generated" not in st.session_state:
     st.session_state.tree_generated = False
 
-# Helper function to get node position for pruned nodes
-def get_node_position(node_id):
-    # This function should return the x, y coordinates of the node with node_id
-    # For simplicity, just returning a sample position mapping
-    node_positions = {
-        "RootL": (0.3, 0.7),
-        "RootR": (0.7, 0.7),
-        "RootLL": (0.2, 0.5),
-        "RootLR": (0.4, 0.5),
-        "RootRL": (0.6, 0.5),
-        "RootRR": (0.8, 0.5),
-    }
-    return node_positions.get(node_id)
+# Helper function to calculate the position of each node
+def calculate_node_position(node_id, depth, x_pos=0.5, y_pos=1.0, step_x=0.4):
+    """Dynamically calculate the position for each node."""
+    if depth == 0:
+        return x_pos, y_pos
+    
+    # Calculate position for left and right children
+    left_x = x_pos - step_x / 2
+    right_x = x_pos + step_x / 2
+    child_y = y_pos - 0.1  # Decrease y-position as depth increases
+    
+    # Recursively calculate the position for the left and right children
+    if "L" in node_id:
+        return calculate_node_position(node_id, depth-1, left_x, child_y, step_x / 2)
+    elif "R" in node_id:
+        return calculate_node_position(node_id, depth-1, right_x, child_y, step_x / 2)
+    return x_pos, y_pos  # For root node
+
 
 # Recursive Tree Drawing Function
 def draw_tree(ax, depth, x, y, step_x, step_y, is_max, node_id, parent_pos, alpha, beta):
@@ -130,7 +135,7 @@ if st.sidebar.button("Generate Tree"):
     # Highlight pruned nodes with a cross
     for pruned_node in pruned_nodes:
         pruned_node_id = pruned_node.split(":")[1].strip()
-        node_pos = get_node_position(pruned_node_id)  # Get the position of the pruned node
+        node_pos = calculate_node_position(pruned_node_id, depth)  # Get the dynamically calculated position
         if node_pos:
             ax.text(node_pos[0], node_pos[1], "X", fontsize=12, ha='center', va='center', color="red")  # Mark with a red "X"
 
