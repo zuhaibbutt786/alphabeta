@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import ConnectionPatch
+import time
 
 # Streamlit App Configuration
 st.set_page_config(page_title="Decision Tree with Minimax", layout="wide")
@@ -23,6 +24,10 @@ def draw_tree(ax, depth, x, y, step_x, step_y, is_max, node_id, parent_pos):
         # Terminal node: Input box for value
         if node_id not in st.session_state.terminal_values:
             st.session_state.terminal_values[node_id] = st.sidebar.number_input(f"Node {node_id} Value:", key=f"node_{node_id}")
+        
+        # Introduce 2-minute pause after input (120 seconds)
+        time.sleep(120)
+
         ax.text(x, y, f"{st.session_state.terminal_values[node_id]}", fontsize=10, ha='center', va='center', bbox=dict(boxstyle="circle", facecolor="white"))
         return st.session_state.terminal_values[node_id]
 
